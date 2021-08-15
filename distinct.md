@@ -79,4 +79,5 @@ Let's try it in gdb. We can convert the hex address of win to decimal convenient
 
 In gdb, we're just going to enter 15 numbers that don't matter, and then the value of win (93824992236948) that we got, then enter 'N' to continuing, so that the check() function enters handler(), which should point to win().
 
-<img src="https://github.com/ArtemiszenN/greyhats_welcomectf2021_writeup/blob/main/img/gdb_execution.png", width="400"/>
+<img src="https://github.com/ArtemiszenN/greyhats_welcomectf2021_writeup/blob/main/img/gdb_execution.png" width="400"/>
+
