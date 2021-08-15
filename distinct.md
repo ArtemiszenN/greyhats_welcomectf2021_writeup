@@ -70,13 +70,13 @@ Next, let's run "p win" to see where we want to go.
 
 <img src="https://github.com/ArtemiszenN/greyhats_welcomectf2021_writeup/blob/main/img/p_win.png"/>
 
-Great, the address of win() is larger than the address of unique, so if we enter the address of win() as a decimal number (and we don't enter even larger numbers), we should be able to change the address that handler() is pointing to, to win, once the sort function completes.
+Great, the address of win() is larger than the address of unique, so if we enter the address of win() as a decimal number (and we don't enter even larger numbers), we should be able to change the address that handler() is pointing to, to win(), once the sort function completes.
 
-Let's try it in gdb. We can convert the hex address of win to decimal conveniently just by entering it into python2.
+Let's try it in gdb. We can convert the hex address of win() to decimal conveniently just by entering it into python2.
 
 <img src="https://github.com/ArtemiszenN/greyhats_welcomectf2021_writeup/blob/main/img/python_hexconvert.png"/>
 
-In gdb, we're just going to enter 15 numbers that don't matter, and then the value of win (93824992236948) that we got, then enter 'N' to continuing, so that the check() function enters handler(), which should point to win().
+In gdb, we're just going to enter 15 numbers that don't matter, and then the value of win (93824992236948) that we got, then enter 'N' to continue, so that the check() function enters handler(), which should point to win().
 
 <img src="https://github.com/ArtemiszenN/greyhats_welcomectf2021_writeup/blob/main/img/gdb_execution.png" width="400"/>
 
