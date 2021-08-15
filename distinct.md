@@ -12,13 +12,12 @@ hh handler;
 We see that handler is a function pointer; i.e., it points to a memory address which is supposed to be the start of a function.
 We see that 16 unsigned long long ints (8 bytes) of nums (SZ is defined as 0x10 which is 16) is first pushed onto the stack, then our function pointer handler is pushed onto the stack. Remember that the stack is first in last out, so addresses are pushed to the bottom of the stack first.
 
-<img src="https://github.com/ArtemiszenN/greyhats_welcomectf2021_writeup/blob/main/img/stack.png" width="400"/>
+<img src="https://github.com/ArtemiszenN/greyhats_welcomectf2021_writeup/blob/main/img/stack.png" width="300"/>
 
 This is what our stack should look like at this point of time.
 
 ```
 handler = &unique;
-
 ```
 In our check() function, handler first points to a unique() function. 
 
@@ -61,7 +60,7 @@ After we enter our numbers, the program does this:
 sort(nums, SZ);
 ```
 
-Hang on, SZ is defined as 16, and i and j stop when they are equal to 16, so we are actually accessing nums[16], or one number on top of nums[15], our last inputted digit in the stack, which, as shown in the stack diagram earlier, is equal to handler. Essentially, handler() is now included in our sort, and handler() is the last number that is in the function scope. Hence, handler() is going to end up either as the largest number in our array, or the initial value of handler(), whichever is larger, at the end of our sort.
+Hang on, SZ is defined as 16, and i and j stop when they are equal to 16, so we are actually accessing nums[16], or one number on top of nums[15], our last inputted digit in the stack, which, as shown in the stack diagram earlier, is equal to handler(). Essentially, handler() is now included in our sort, and handler() is the last number that is in the function scope. Hence, handler() is going to end up either as the largest number in our array, or the initial value of handler(), whichever is larger, at the end of our sort.
 
 But what is handler() in the first place? Handler() points to a memory address, which in a 64 bit system, is an 8 byte address. Unsigned long long integers are also 8 bytes, we can just convert the 8 byte hex address of handler() to a decimal to see what it is. We see that handler points to unique() first, so let's run "p unique" in gdb to see what memory address unique() points to.
 
@@ -89,9 +88,9 @@ It didn't work. Sometimes, we would also get a segmentation fault and our progra
 
 <img src="https://github.com/ArtemiszenN/greyhats_welcomectf2021_writeup/blob/main/img/file_distinct.png"/>
 
-We can see that distinct is referred to as an "ELF 64-bit LSB shared object", instead of as  "ELF 64-bit LSB executable". That means that our program is a Position Independent Executable. In other words, when our program is loaded into memory, the addresses which it is loaded into is randomized for each time. This is disabled in gdb, which is why our exploit was able to work. 
+We can see that distinct is referred to as an "ELF 64-bit LSB shared object", instead of as  "ELF 64-bit LSB executable". That means that our program has PIE (Position Independent Executable) enabled. In other words, when our program is loaded into virtual memory, the addresses which it is given is randomized each time. This is disabled in gdb, which is why our exploit was able to work. 
 
-The good news is that the relative addresses of our functions are the same, we were previously able to get the addresses of our win() and unique() functions in gdb, so we can just subtract the two to get the offset that we need. We can do this pretty easily in python2.
+The good news is that the relative addresses of our functions are the same, and since we were previously able to get the addresses of our win() and unique() functions in gdb,  we can just subtract the two to get the offset that we need. We can do this pretty easily in python2.
 
 <img src="https://github.com/ArtemiszenN/greyhats_welcomectf2021_writeup/blob/main/img/python_hexsubtract.png"/>
 
