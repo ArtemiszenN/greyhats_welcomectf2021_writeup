@@ -81,3 +81,36 @@ In gdb, we're just going to enter 15 numbers that don't matter, and then the val
 
 <img src="https://github.com/ArtemiszenN/greyhats_welcomectf2021_writeup/blob/main/img/gdb_execution.png" width="400"/>
 
+Cool, so we now have code redirection in gdb. Let's try it on our actual machine.
+
+<img src="https://github.com/ArtemiszenN/greyhats_welcomectf2021_writeup/blob/main/img/local_fail.png" width="400"/>
+
+It didn't work. Sometimes, we would also get a segmentation fault and our program would crash. Running "file distinct" (I renamed the file from distinct.o to distinct), we can easily see why that is the case.
+
+<img src="https://github.com/ArtemiszenN/greyhats_welcomectf2021_writeup/blob/main/img/file_distinct.png"/>
+
+We can see that distinct is referred to as an "ELF 64-bit LSB shared object", instead of as  "ELF 64-bit LSB executable". That means that our program is a Position Independent Executable. In other words, when our program is loaded into memory, the addresses which it is loaded into is randomized for each time. This is disabled in gdb, which is why our exploit was able to work. 
+
+The good news is that the relative addresses of our functions are the same, we were previously able to get the addresses of our win() and unique() functions in gdb, so we can just subtract the two to get the offset that we need. We can do this pretty easily in python2.
+
+<img src="https://github.com/ArtemiszenN/greyhats_welcomectf2021_writeup/blob/main/img/python_hexsubtract.png"/>
+
+We can also find the offsets by using objdump -t distinct.
+
+<img src="https://github.com/ArtemiszenN/greyhats_welcomectf2021_writeup/blob/main/img/objdump.png"/>
+
+The first number in that output represents the offset of our function from the text section in our program. In gdb, we can find where that is with "info proc map".
+
+<img src="https://github.com/ArtemiszenN/greyhats_welcomectf2021_writeup/blob/main/img/infoprocmap.png"/>
+
+We can see our text section starts at 0x555555554000. Adding the offset of win, 0000000000001594, to that, we get 0x555555555594, which confirms our objdump output. Hence, we can either take 0x555555555594 - 0x55555555537d or 0000000000001594 - 000000000000137d to get our offset of win() from unique(), which both give us 535. Of course, we also have to remember not to enter the same number, or handler() would point to repeated(). Remember that the check for repeated numbers is done after sorting, so our inserted address would get replaced by the address to repeated() if we enter repeated numbers.
+
+Next problem: we need to find the address to unique() so that we can add the output. This is actually a rather easy problem to solve, because the program prints all the sorted numbers before asking us if we want to go again. If we can get the address of unique() into our array, we can get the address printed in decimal. Add 535 to that, and we get our address of win() in decimal. We don't know what the address of unique() is though, so let's just enter the largest possible 8 byte number and check if we get something. We're going to do this on the challenge server since we should be rather close to the solution.
+
+<img src="https://github.com/ArtemiszenN/greyhats_welcomectf2021_writeup/blob/main/img/distinct_cropped.png"/>
+
+Cool, the number printed is clearly not the number we inputted, so it should be the address of unique() in decimal. We just have to add 535 to that in our next loop and stop the program there to get a shell. Remember we have a 60 second timeout window, so we either have to be fast or automate this in python.
+
+<img src="https://github.com/ArtemiszenN/greyhats_welcomectf2021_writeup/blob/main/img/distinct_c.png"/>
+
+There we go.
