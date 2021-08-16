@@ -14,7 +14,7 @@ We see that handler is a function pointer; i.e., it points to a memory address w
 <img src="https://github.com/ArtemiszenN/greyhats_welcomectf2021_writeup/blob/main/img/disassemblecheck.png"/>
 <img src="https://github.com/ArtemiszenN/greyhats_welcomectf2021_writeup/blob/main/img/disassemble_check2.png"/>
 
-This is what our stack should look like at this point of time.
+This is what our variables look like at this point in time.
 
 ```
 handler = &unique;
@@ -60,7 +60,7 @@ After we enter our numbers, the program does this:
 sort(nums, SZ);
 ```
 
-Hang on, SZ is defined as 16, and i and j stop when they are equal to 16, so we are actually accessing nums[16], or one number on top of nums[15], our last inputted digit in the stack, which, as shown in the stack diagram earlier, is equal to handler(). Essentially, handler() is now included in our sort, and handler() is the last number that is in the function scope. Hence, handler() is going to end up either as the largest number in our array, or the initial value of handler(), whichever is larger, at the end of our sort.
+Hang on, SZ is defined as 16, and i and j stop when they are equal to 16, so we are actually accessing nums[16], or one number on top of nums[15], our last inputted digit in program data, which, as shown in the diagram earlier, is equal to handler(). Essentially, handler() is now included in our sort, and handler() is the last number that is in the function scope. Hence, handler() is going to end up either as the largest number in our array, or the initial value of handler(), whichever is larger, at the end of our sort.
 
 But what is handler() in the first place? Handler() points to a memory address, which in a 64 bit system, is an 8 byte address. Unsigned long long integers are also 8 bytes, we can just convert the 8 byte hex address of handler() to a decimal to see what it is. We see that handler points to unique() first, so let's run "p unique" in gdb to see what memory address unique() points to.
 
