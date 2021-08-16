@@ -11,7 +11,7 @@ hh handler;
 
 We see that handler is a function pointer; i.e., it points to a memory address which is supposed to be the start of a function, and that 16 unsigned long long ints (8 bytes) of nums (SZ is defined as 0x10 which is 16) is first pushed onto program data, then our function pointer handler is pushed onto program data. We can verify this in gdb by disassembling check, then looking at the memory at where nums is.
 
-<img src="https://github.com/ArtemiszenN/greyhats_welcomectf2021_writeup/blob/main/img/disassemble_check.png"/>
+<img src="https://github.com/ArtemiszenN/greyhats_welcomectf2021_writeup/blob/main/img/disassemblecheck.png"/>
 <img src="https://github.com/ArtemiszenN/greyhats_welcomectf2021_writeup/blob/main/img/disassemble_check2.png"/>
 
 This is what our stack should look like at this point of time.
